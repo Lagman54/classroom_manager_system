@@ -8,6 +8,18 @@ import (
 	"strconv"
 )
 
+func (app *application) readJSON(r *http.Request, dst any) error {
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	err := dec.Decode(dst)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (app *application) respondWithError(w http.ResponseWriter, code int, message string) {
 	app.respondWithJSON(w, code, map[string]string{"error": message})
 }
@@ -49,7 +61,7 @@ func (app *application) createClassHandler(w http.ResponseWriter, r *http.Reques
 	app.respondWithJSON(w, http.StatusOK, classroom)
 }
 
-func (app *application) createGetHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) createGetClassHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["classId"])
 	if err != nil {
@@ -66,14 +78,55 @@ func (app *application) createGetHandler(w http.ResponseWriter, r *http.Request)
 	app.respondWithJSON(w, http.StatusOK, classroom)
 }
 
-func (app *application) readJSON(r *http.Request, dst any) error {
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
-	err := dec.Decode(dst)
-	if err != nil {
-		return err
+func (app *application) createUpdateClassHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["classId"])
+	if err != nil || id < 1 {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid menu ID")
+		return
 	}
 
-	return nil
+	class, err := app.models.Classrooms.Get(id)
+	if err != nil {
+		app.respondWithError(w, http.StatusNotFound, "404 not found")
+		return
+	}
+
+	var input struct {
+		Name *string `json:"name"`
+	}
+
+	err = app.readJSON(r, &input)
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	if input.Name != nil {
+		class.Name = *input.Name
+	}
+
+	err = app.models.Classrooms.Update(class)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+	}
+
+	app.respondWithJSON(w, http.StatusOK, class)
+}
+
+func (app *application) createDeleteClassHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["classId"])
+	if err != nil || id < 1 {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid menu ID")
+		return
+	}
+
+	err = app.models.Classrooms.Delete(id)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
+		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, "Success")
 }

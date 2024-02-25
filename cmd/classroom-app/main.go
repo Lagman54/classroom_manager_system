@@ -40,15 +40,20 @@ func main() {
 		config: cfg,
 		models: entity.NewModels(db),
 	}
-
 	app.run()
 }
 
 func (app *application) run() {
 	r := mux.NewRouter()
 
+	// Create class
 	r.HandleFunc("/class", app.createClassHandler).Methods("POST")
-	r.HandleFunc("/class/{classId}", app.createGetHandler).Methods("GET")
+	// Get class
+	r.HandleFunc("/class/{classId}", app.createGetClassHandler).Methods("GET")
+	// Update class
+	r.HandleFunc("/class/{classId}", app.createUpdateClassHandler).Methods("PUT")
+	// Delete class
+	r.HandleFunc("/class/{classId}", app.createDeleteClassHandler).Methods("DELETE")
 
 	log.Printf("Starting server on %s\n", app.config.port)
 	err := http.ListenAndServe(app.config.port, r)
