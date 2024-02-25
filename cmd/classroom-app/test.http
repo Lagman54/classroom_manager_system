@@ -12,8 +12,8 @@ Content-Type: application/json
     });
 %}
 
-### Get Menu Item
-GET localhost:8080/class/1
+### Get Classroom
+GET localhost:8080/class/4
 
 > {%
     client.test("Request executed successfully", function() {
@@ -22,11 +22,11 @@ GET localhost:8080/class/1
 %}
 
 ### Update Menu Item
-PUT localhost:8081/api/v1/menus/1
+PUT localhost:8080/class/4
 Content-Type: application/json
 
 {
-  "nutritionValue": 100
+  "name": "Updated"
 }
 
 > {%
@@ -36,7 +36,7 @@ Content-Type: application/json
 %}
 
 ### Delete Menu Item
-DELETE localhost:8081/api/v1/menus/1
+DELETE localhost:8080/class/4
 Content-Type: application/json
 
 > {%

@@ -128,5 +128,5 @@ func (app *application) createDeleteClassHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	app.respondWithJSON(w, http.StatusOK, "Success")
+	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "Success"})
 }
