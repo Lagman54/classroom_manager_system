@@ -3,7 +3,8 @@ POST localhost:8080/class
 Content-Type: application/json
 
 {
-  "name": "GoLang application development"
+  "name": "GoLang application development",
+  "description": "Golang class"
 }
 
 > {%
@@ -13,7 +14,7 @@ Content-Type: application/json
 %}
 
 ### Get Classroom
-GET localhost:8080/class/4
+GET localhost:8080/class/2
 
 > {%
     client.test("Request executed successfully", function() {
@@ -21,12 +22,13 @@ GET localhost:8080/class/4
     });
 %}
 
-### Update Menu Item
-PUT localhost:8080/class/4
+### Update classroom
+PUT localhost:8080/class/2
 Content-Type: application/json
 
 {
-  "name": "Updated"
+  "name": "Golang application dev",
+  "description": "upd"
 }
 
 > {%
@@ -35,8 +37,8 @@ Content-Type: application/json
     });
 %}
 
-### Delete Menu Item
-DELETE localhost:8080/class/4
+### Delete Classroom
+DELETE localhost:8080/class/2
 Content-Type: application/json
 
 > {%

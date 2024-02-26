@@ -39,7 +39,8 @@ func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload
 
 func (app *application) createClassHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Name string `json:"name"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
 	}
 
 	err := app.readJSON(r, &input)
@@ -49,7 +50,8 @@ func (app *application) createClassHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	classroom := &entity.Classroom{
-		Name: input.Name,
+		Name:        input.Name,
+		Description: input.Description,
 	}
 
 	err = app.models.Classrooms.Insert(classroom)
@@ -93,7 +95,8 @@ func (app *application) createUpdateClassHandler(w http.ResponseWriter, r *http.
 	}
 
 	var input struct {
-		Name *string `json:"name"`
+		Name        *string `json:"name"`
+		Description *string `json:"description"`
 	}
 
 	err = app.readJSON(r, &input)
@@ -106,9 +109,14 @@ func (app *application) createUpdateClassHandler(w http.ResponseWriter, r *http.
 		class.Name = *input.Name
 	}
 
+	if input.Description != nil {
+		class.Description = *input.Description
+	}
+
 	err = app.models.Classrooms.Update(class)
 	if err != nil {
 		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
 	}
 
 	app.respondWithJSON(w, http.StatusOK, class)

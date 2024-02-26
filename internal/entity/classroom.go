@@ -7,10 +7,11 @@ import (
 )
 
 type Classroom struct {
-	Id       int    `json:"id"`
-	Name     string `json:"name"`
-	Students []User `json:"users"`
-	Teachers []User `json:"teachers"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Students    []User `json:"users"`
+	Teachers    []User `json:"teachers"`
 }
 
 type ClassroomModel struct {
@@ -20,15 +21,17 @@ type ClassroomModel struct {
 // Insert new classroom into the database
 func (c ClassroomModel) Insert(classroom *Classroom) error {
 	query := `
-		INSERT INTO classroom (name) 
-		VALUES($1)
+		INSERT INTO classroom (name, description) 
+		VALUES($1, $2)
 		RETURNING id
 		`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	return c.DB.QueryRowContext(ctx, query, classroom.Name).Scan(&classroom.Id)
+	args := []any{classroom.Name, classroom.Description}
+
+	return c.DB.QueryRowContext(ctx, query, args...).Scan(&classroom.Id)
 }
 
 // Get classroom from the database
@@ -42,7 +45,7 @@ func (c ClassroomModel) Get(id int) (*Classroom, error) {
 
 	var classRoom Classroom
 	row := c.DB.QueryRowContext(ctx, query, id)
-	err := row.Scan(&classRoom.Id, &classRoom.Name)
+	err := row.Scan(&classRoom.Id, &classRoom.Name, &classRoom.Description)
 
 	// TODO add Students and Teachers to classRoom
 
@@ -56,13 +59,15 @@ func (c ClassroomModel) Get(id int) (*Classroom, error) {
 func (c ClassroomModel) Update(classroom *Classroom) error {
 	query := `
 		UPDATE classroom 
-		SET name=$1
-		WHERE id=$2
+		SET name=$1, description=$2
+		WHERE id=$3
 	`
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := c.DB.ExecContext(ctx, query, classroom.Name, classroom.Id)
+	args := []any{classroom.Name, classroom.Description, classroom.Id}
+
+	_, err := c.DB.ExecContext(ctx, query, args...)
 	return err
 }
 
