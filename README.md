@@ -1,4 +1,4 @@
-# Classrom management sytem
+# Classroom management system
 
 
 ```

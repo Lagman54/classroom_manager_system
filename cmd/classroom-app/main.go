@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FinalProject/internal/entity"
+	"FinalProject/internal/classroom-app/entity"
 	"database/sql"
 	"flag"
 	"github.com/gorilla/mux"

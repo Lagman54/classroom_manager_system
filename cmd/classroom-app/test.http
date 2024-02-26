@@ -14,7 +14,7 @@ Content-Type: application/json
 %}
 
 ### Get Classroom
-GET localhost:8080/class/2
+GET localhost:8080/class/5
 
 > {%
     client.test("Request executed successfully", function() {

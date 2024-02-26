@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FinalProject/internal/entity"
+	"FinalProject/internal/classroom-app/entity"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"net/http"
