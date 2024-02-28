@@ -14,6 +14,11 @@ POST /class
 GET /class/:id
 PUT /class/:id
 DELTE /class/:id
+
+POST /task
+GET /task/:id
+PUT /task/:id
+DELETE /task/:id
 ```
 
 ## DB Structure
@@ -31,6 +36,7 @@ Table users {
 Table classroom {
   id integer [primary key]
   name varchar
+  description varchar
 }
 
 Table classroom_user {
@@ -44,6 +50,7 @@ Table task {
   header string
   description string
   created_at timestamp
+  updated_at timestamp
 }
 
 Table classroom_task {

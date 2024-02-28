@@ -49,11 +49,19 @@ func (app *application) run() {
 	// Create class
 	r.HandleFunc("/class", app.createClassHandler).Methods("POST")
 	// Get class
-	r.HandleFunc("/class/{classId}", app.createGetClassHandler).Methods("GET")
+	r.HandleFunc("/class/{classId}", app.getClassHandler).Methods("GET")
 	// Update class
-	r.HandleFunc("/class/{classId}", app.createUpdateClassHandler).Methods("PUT")
+	r.HandleFunc("/class/{classId}", app.updateClassHandler).Methods("PUT")
 	// Delete class
-	r.HandleFunc("/class/{classId}", app.createDeleteClassHandler).Methods("DELETE")
+	r.HandleFunc("/class/{classId}", app.deleteClassHandler).Methods("DELETE")
+	// Get Task
+	r.HandleFunc("/task", app.createTaskHandler).Methods("POST")
+	// Update Task
+	r.HandleFunc("/task/{taskId}", app.getTaskHandler).Methods("GET")
+	// Put Task
+	r.HandleFunc("/task/{taskId}", app.updateTaskHandler).Methods("PUT")
+	// Delete Task
+	r.HandleFunc("/task/{taskId}", app.deleteTaskHandler).Methods("DELETE")
 
 	log.Printf("Starting server on %s\n", app.config.port)
 	err := http.ListenAndServe(app.config.port, r)

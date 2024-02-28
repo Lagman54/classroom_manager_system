@@ -46,3 +46,51 @@ Content-Type: application/json
         client.assert(response.status === 200, "Response status is not 200");
     });
 %}
+
+### Create Task
+POST localhost:8080/task
+Content-Type: application/json
+
+{
+  "header": "Home work 1",
+  "description": "do until monday"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Get Task
+GET localhost:8080/task/1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Update Task
+PUT localhost:8080/task/1
+Content-Type: application/json
+
+{
+  "header": "Lab2",
+  "description": "Dear students, upload lab1 till next week"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Delete Task
+DELETE localhost:8080/task/1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}

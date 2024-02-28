@@ -63,7 +63,7 @@ func (app *application) createClassHandler(w http.ResponseWriter, r *http.Reques
 	app.respondWithJSON(w, http.StatusOK, classroom)
 }
 
-func (app *application) createGetClassHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) getClassHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["classId"])
 	if err != nil {
@@ -80,7 +80,7 @@ func (app *application) createGetClassHandler(w http.ResponseWriter, r *http.Req
 	app.respondWithJSON(w, http.StatusOK, classroom)
 }
 
-func (app *application) createUpdateClassHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) updateClassHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["classId"])
 	if err != nil || id < 1 {
@@ -122,7 +122,7 @@ func (app *application) createUpdateClassHandler(w http.ResponseWriter, r *http.
 	app.respondWithJSON(w, http.StatusOK, class)
 }
 
-func (app *application) createDeleteClassHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) deleteClassHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := strconv.Atoi(params["classId"])
 	if err != nil || id < 1 {
@@ -134,6 +134,107 @@ func (app *application) createDeleteClassHandler(w http.ResponseWriter, r *http.
 	if err != nil {
 		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
 		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "Success"})
+}
+
+// Task handlers
+
+func (app *application) createTaskHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Header      string `json:"header"`
+		Description string `json:"description"`
+	}
+
+	err := app.readJSON(r, &input)
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	task := &entity.Task{
+		Header:      input.Header,
+		Description: input.Description,
+	}
+
+	err = app.models.Tasks.Insert(task)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+	app.respondWithJSON(w, http.StatusOK, task)
+}
+
+func (app *application) getTaskHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	taskId, err := strconv.Atoi(params["taskId"])
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid task id")
+		return
+	}
+
+	task, err := app.models.Tasks.Get(taskId)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, task)
+}
+
+func (app *application) updateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	taskId, err := strconv.Atoi(params["taskId"])
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid task id")
+		return
+	}
+
+	task, err := app.models.Tasks.Get(taskId)
+	if err != nil {
+		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
+		return
+	}
+
+	var input struct {
+		Header      *string `json:"header"`
+		Description *string `json:"description"`
+	}
+
+	err = app.readJSON(r, &input)
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	if input.Header != nil {
+		task.Header = *input.Header
+	}
+	if input.Description != nil {
+		task.Description = *input.Description
+	}
+
+	err = app.models.Tasks.Update(task)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, task)
+}
+
+func (app *application) deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	taskId, err := strconv.Atoi(params["taskId"])
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid task id")
+		return
+	}
+
+	err = app.models.Tasks.Delete(taskId)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal sever error")
 	}
 
 	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "Success"})
