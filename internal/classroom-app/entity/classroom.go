@@ -25,12 +25,10 @@ func (c ClassroomModel) Insert(classroom *Classroom) error {
 		VALUES($1, $2)
 		RETURNING id
 		`
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	args := []any{classroom.Name, classroom.Description}
-
 	return c.DB.QueryRowContext(ctx, query, args...).Scan(&classroom.Id)
 }
 

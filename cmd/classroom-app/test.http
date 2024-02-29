@@ -94,3 +94,54 @@ DELETE localhost:8080/task/1
         client.assert(response.status === 200, "Response status is not 200");
     });
 %}
+
+
+### Create User
+POST localhost:8080/user
+Content-Type: application/json
+
+{
+  "first_name": "John",
+  "last_name": "Doe"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Get User
+GET localhost:8080/user/1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Update User
+PUT localhost:8080/user/1
+Content-Type: application/json
+
+{
+  "first_name": "Aibar",
+  "last_name": "Kudiyarkhan"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Delete User
+DELETE localhost:8080/user/1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+

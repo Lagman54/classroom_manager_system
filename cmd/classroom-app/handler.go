@@ -108,7 +108,6 @@ func (app *application) updateClassHandler(w http.ResponseWriter, r *http.Reques
 	if input.Name != nil {
 		class.Name = *input.Name
 	}
-
 	if input.Description != nil {
 		class.Description = *input.Description
 	}
@@ -235,6 +234,108 @@ func (app *application) deleteTaskHandler(w http.ResponseWriter, r *http.Request
 	err = app.models.Tasks.Delete(taskId)
 	if err != nil {
 		app.respondWithError(w, http.StatusInternalServerError, "Internal sever error")
+	}
+
+	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "Success"})
+}
+
+// User handlers
+
+func (app *application) createUserHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+	}
+
+	err := app.readJSON(r, &input)
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	task := &entity.User{
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+	}
+	err = app.models.Users.Insert(task)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, task)
+}
+
+func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userId, err := strconv.Atoi(params["userId"])
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid user Id")
+		return
+	}
+
+	user, err := app.models.Users.Get(userId)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, user)
+}
+
+func (app *application) updateUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userId, err := strconv.Atoi(params["userId"])
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid user Id")
+		return
+	}
+
+	var input struct {
+		FirstName *string `json:"first_name"`
+		LastName  *string `json:"last_name"`
+	}
+
+	err = app.readJSON(r, &input)
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	user, err := app.models.Users.Get(userId)
+	if err != nil {
+		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
+		return
+	}
+
+	if input.FirstName != nil {
+		user.FirstName = *input.FirstName
+	}
+	if input.LastName != nil {
+		user.LastName = *input.LastName
+	}
+
+	err = app.models.Users.Update(user)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	app.respondWithJSON(w, http.StatusOK, user)
+}
+
+func (app *application) deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userId, err := strconv.Atoi(params["userId"])
+	if err != nil {
+		app.respondWithError(w, http.StatusBadRequest, "Invalid user Id")
+		return
+	}
+
+	err = app.models.Users.Delete(userId)
+	if err != nil {
+		app.respondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
 	}
 
 	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "Success"})

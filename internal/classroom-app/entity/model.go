@@ -5,6 +5,7 @@ import "database/sql"
 type Models struct {
 	Classrooms ClassroomModel
 	Tasks      TaskModel
+	Users      UserModel
 }
 
 func NewModels(db *sql.DB) Models {
@@ -13,6 +14,9 @@ func NewModels(db *sql.DB) Models {
 			DB: db,
 		},
 		Tasks: TaskModel{
+			DB: db,
+		},
+		Users: UserModel{
 			DB: db,
 		},
 	}
