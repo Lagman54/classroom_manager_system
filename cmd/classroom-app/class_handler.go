@@ -60,6 +60,37 @@ func (app *application) getClassHandler(w http.ResponseWriter, r *http.Request) 
 	app.writeJSON(w, http.StatusOK, envelope{"classroom": classroom}, nil)
 }
 
+func (app *application) getClassesList(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Name string
+		entity.Filters
+	}
+	v := validator.New()
+	qs := r.URL.Query()
+
+	input.Name = app.readStrings(qs, "name", "")
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
+	input.Filters.Sort = app.readStrings(qs, "sort", "id")
+
+	input.Filters.SortSafeList = []string{
+		"id", "name",
+		"-id", "-name",
+	}
+
+	if entity.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+	classrooms, metadata, err := app.models.Classrooms.GetAll(input.Name, input.Filters)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, envelope{"classrooms": classrooms, "metadata": metadata}, nil)
+}
+
 func (app *application) updateClassHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil || id < 1 {

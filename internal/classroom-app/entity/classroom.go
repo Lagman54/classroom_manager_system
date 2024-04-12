@@ -4,6 +4,7 @@ import (
 	"FinalProject/internal/classroom-app/validator"
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -56,6 +57,56 @@ func (c ClassroomModel) Get(id int) (*Classroom, error) {
 		return nil, err
 	}
 	return &classRoom, nil
+}
+
+// Get all classrooms from the database
+func (c ClassroomModel) GetAll(name string, filters Filters) ([]*Classroom, Metadata, error) {
+	query := fmt.Sprintf(
+		`
+		SELECT count(*) OVER(), id, created_at, name, description
+		FROM classroom
+		WHERE (LOWER(name) = LOWER($1) OR $1 = '')
+		ORDER BY %s %s, id ASC
+		LIMIT $2 OFFSET $3
+		`,
+		filters.sortColumn(), filters.sortDirection())
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	args := []interface{}{name, filters.limit(), filters.offset()}
+
+	rows, err := c.DB.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, Metadata{}, err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			c.ErrorLog.Println(err)
+		}
+	}()
+
+	totalRecords := 0
+
+	var classrooms []*Classroom
+	for rows.Next() {
+		var classroom Classroom
+		err := rows.Scan(&totalRecords, &classroom.Id, &classroom.CreatedAt, &classroom.Name, &classroom.Description)
+		if err != nil {
+			return nil, Metadata{}, err
+		}
+
+		classrooms = append(classrooms, &classroom)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, Metadata{}, err
+	}
+
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	return classrooms, metadata, nil
 }
 
 // Update classroom in the database

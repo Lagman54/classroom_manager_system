@@ -21,6 +21,8 @@ func (app *application) routes() http.Handler {
 	api.HandleFunc("/class", app.requireActivatedUser(app.createClassHandler)).Methods("POST")
 	// Get class
 	api.HandleFunc("/class/{id}", app.requireActivatedUser(app.getClassHandler)).Methods("GET")
+	// Get list of classrooms
+	api.HandleFunc("/classes", app.requireActivatedUser(app.getClassesList)).Methods("GET")
 	// Update class
 	api.HandleFunc("/class/{id}", app.requireActivatedUser(app.updateClassHandler)).Methods("PUT")
 	// Delete class
