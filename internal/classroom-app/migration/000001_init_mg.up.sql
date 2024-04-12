@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS classroom
 (
     id          serial PRIMARY KEY,
     name        varchar NOT NULL,
-    description varchar NOT NULL
+    description varchar NOT NULL,
+    created_at timestamp(0) with time zone DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS users
@@ -11,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users
     created_at    timestamp(0) with time zone DEFAULT now(),
     first_name    varchar NOT NULL,
     last_name     varchar NOT NULL,
-    email         citext  NOT NULL,
+    email         citext  NOT NULL unique,
     password_hash bytea   NOT NULL,
     activated     bool    NOT NULL
 );

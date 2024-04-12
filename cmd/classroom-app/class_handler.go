@@ -2,6 +2,7 @@ package main
 
 import (
 	"FinalProject/internal/classroom-app/entity"
+	"FinalProject/internal/classroom-app/validator"
 	"database/sql"
 	"errors"
 	"log"
@@ -23,6 +24,12 @@ func (app *application) createClassHandler(w http.ResponseWriter, r *http.Reques
 	classroom := &entity.Classroom{
 		Name:        input.Name,
 		Description: input.Description,
+	}
+
+	v := validator.New()
+	if entity.ValidateClassroom(v, classroom); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
 	}
 
 	err = app.models.Classrooms.Insert(classroom)
@@ -85,6 +92,12 @@ func (app *application) updateClassHandler(w http.ResponseWriter, r *http.Reques
 	}
 	if input.Description != nil {
 		classroom.Description = *input.Description
+	}
+
+	v := validator.New()
+	if entity.ValidateClassroom(v, classroom); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
 	}
 
 	err = app.models.Classrooms.Update(classroom)

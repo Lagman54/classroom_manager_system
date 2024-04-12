@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"FinalProject/internal/classroom-app/validator"
 	"context"
 	"database/sql"
 	"log"
@@ -55,14 +56,14 @@ func (t *TaskModel) Get(id int) (*Task, error) {
 func (t *TaskModel) Update(task *Task) error {
 	query := `
 		UPDATE task
-		SET header=$1, description=$2
-		WHERE id=$3
+		SET header=$1, description=$2, updated_at=current_timestamp
+		WHERE id=$3 and updated_at=$4
 		RETURNING updated_at
 `
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	args := []any{task.Header, task.Description, task.Id}
+	args := []any{task.Header, task.Description, task.Id, task.UpdatedAt}
 
 	return t.DB.QueryRowContext(ctx, query, args...).Scan(&task.UpdatedAt)
 }
@@ -77,4 +78,10 @@ func (t *TaskModel) Delete(id int) error {
 
 	_, err := t.DB.ExecContext(ctx, query, id)
 	return err
+}
+
+func ValidateTask(v *validator.Validator, task *Task) {
+	v.Check(task.Header != "", "header", "must be provided")
+	v.Check(len(task.Header) <= 50, "header", "must be no more than 50 bytes long")
+	v.Check(len(task.Description) <= 3000, "description", "must be no more than 1000 bytes long")
 }

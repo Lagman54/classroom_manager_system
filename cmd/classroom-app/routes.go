@@ -18,11 +18,11 @@ func (app *application) routes() http.Handler {
 	api := r.PathPrefix("/api/v1").Subrouter()
 
 	// Create class
-	api.HandleFunc("/class", app.requirePermissions("class:write", app.createClassHandler)).Methods("POST")
+	api.HandleFunc("/class", app.requireActivatedUser(app.createClassHandler)).Methods("POST")
 	// Get class
-	api.HandleFunc("/class/{id}", app.requirePermissions("class:read", app.getClassHandler)).Methods("GET")
+	api.HandleFunc("/class/{id}", app.requireActivatedUser(app.getClassHandler)).Methods("GET")
 	// Update class
-	api.HandleFunc("/class/{id}", app.requirePermissions("class:write", app.updateClassHandler)).Methods("PUT")
+	api.HandleFunc("/class/{id}", app.requireActivatedUser(app.updateClassHandler)).Methods("PUT")
 	// Delete class
 	api.HandleFunc("/class/{id}", app.requirePermissions("class:write", app.deleteClassHandler)).Methods("DELETE")
 
