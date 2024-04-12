@@ -13,9 +13,9 @@ func (app *application) routes() http.Handler {
 
 	r.MethodNotAllowedHandler = http.HandlerFunc(app.methodNotAllowedResponse)
 
-	// TODO: Add a healthcheck endpoint to the router.
-
 	api := r.PathPrefix("/api/v1").Subrouter()
+
+	api.HandleFunc("/healthcheck", app.healthcheckHandler).Methods("GET")
 
 	// Create class
 	api.HandleFunc("/class", app.requireActivatedUser(app.createClassHandler)).Methods("POST")
