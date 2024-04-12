@@ -3,6 +3,7 @@ package entity
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -15,7 +16,9 @@ type Classroom struct {
 }
 
 type ClassroomModel struct {
-	DB *sql.DB
+	DB       *sql.DB
+	InfoLog  *log.Logger
+	ErrorLog *log.Logger
 }
 
 // Insert new classroom into the database

@@ -1,5 +1,5 @@
 ### Create Classroom
-POST localhost:8080/class
+POST localhost:8080/api/v1/class
 Content-Type: application/json
 
 {
@@ -9,12 +9,12 @@ Content-Type: application/json
 
 > {%
     client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.status === 201, "Response status is not 201");
     });
 %}
 
 ### Get Classroom
-GET localhost:8080/class/5
+GET localhost:8080/api/v1/class/2
 
 > {%
     client.test("Request executed successfully", function() {
@@ -23,7 +23,7 @@ GET localhost:8080/class/5
 %}
 
 ### Update classroom
-PUT localhost:8080/class/2
+PUT localhost:8080/api/v1/class/2
 Content-Type: application/json
 
 {
@@ -38,7 +38,7 @@ Content-Type: application/json
 %}
 
 ### Delete Classroom
-DELETE localhost:8080/class/2
+DELETE localhost:8080/api/v1/class/2
 Content-Type: application/json
 
 > {%
@@ -48,7 +48,7 @@ Content-Type: application/json
 %}
 
 ### Create Task
-POST localhost:8080/task
+POST localhost:8080/api/v1/task
 Content-Type: application/json
 
 {
@@ -58,12 +58,12 @@ Content-Type: application/json
 
 > {%
     client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.status === 201, "Response status is not 201");
     });
 %}
 
 ### Get Task
-GET localhost:8080/task/1
+GET localhost:8080/api/v1/task/2
 
 > {%
     client.test("Request executed successfully", function() {
@@ -72,7 +72,7 @@ GET localhost:8080/task/1
 %}
 
 ### Update Task
-PUT localhost:8080/task/1
+PUT localhost:8080/api/v1/task/2
 Content-Type: application/json
 
 {
@@ -87,61 +87,10 @@ Content-Type: application/json
 %}
 
 ### Delete Task
-DELETE localhost:8080/task/1
+DELETE localhost:8080/api/v1/task/2
 
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
     });
 %}
-
-
-### Create User
-POST localhost:8080/user
-Content-Type: application/json
-
-{
-  "first_name": "John",
-  "last_name": "Doe"
-}
-
-> {%
-    client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
-
-### Get User
-GET localhost:8080/user/1
-
-> {%
-    client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
-
-### Update User
-PUT localhost:8080/user/1
-Content-Type: application/json
-
-{
-  "first_name": "Aibar",
-  "last_name": "Kudiyarkhan"
-}
-
-> {%
-    client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
-
-### Delete User
-DELETE localhost:8080/user/1
-
-> {%
-    client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
-
-

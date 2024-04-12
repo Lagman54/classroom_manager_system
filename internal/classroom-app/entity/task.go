@@ -3,6 +3,7 @@ package entity
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -15,7 +16,9 @@ type Task struct {
 }
 
 type TaskModel struct {
-	DB *sql.DB
+	DB       *sql.DB
+	InfoLog  *log.Logger
+	ErrorLog *log.Logger
 }
 
 func (t *TaskModel) Insert(task *Task) error {
@@ -33,7 +36,7 @@ func (t *TaskModel) Insert(task *Task) error {
 
 func (t *TaskModel) Get(id int) (*Task, error) {
 	query := `
-		SELECT * FROM task
+		SELECT id, header, description, created_at, updated_at FROM task
 		WHERE id=$1
 `
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
