@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FinalProject/internal/classroom-app/entity"
+	"FinalProject/internal/classroom-app/model"
 	"FinalProject/internal/classroom-app/validator"
 	"database/sql"
 	"errors"
@@ -21,13 +21,13 @@ func (app *application) createClassHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	classroom := &entity.Classroom{
+	classroom := &model.Classroom{
 		Name:        input.Name,
 		Description: input.Description,
 	}
 
 	v := validator.New()
-	if entity.ValidateClassroom(v, classroom); !v.Valid() {
+	if model.ValidateClassroom(v, classroom); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
@@ -63,7 +63,7 @@ func (app *application) getClassHandler(w http.ResponseWriter, r *http.Request) 
 func (app *application) getClassesList(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Name string
-		entity.Filters
+		model.Filters
 	}
 	v := validator.New()
 	qs := r.URL.Query()
@@ -78,7 +78,7 @@ func (app *application) getClassesList(w http.ResponseWriter, r *http.Request) {
 		"-id", "-name",
 	}
 
-	if entity.ValidateFilters(v, input.Filters); !v.Valid() {
+	if model.ValidateFilters(v, input.Filters); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
@@ -126,7 +126,7 @@ func (app *application) updateClassHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	v := validator.New()
-	if entity.ValidateClassroom(v, classroom); !v.Valid() {
+	if model.ValidateClassroom(v, classroom); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}

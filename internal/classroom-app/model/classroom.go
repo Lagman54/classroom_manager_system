@@ -1,4 +1,4 @@
-package entity
+package model
 
 import (
 	"FinalProject/internal/classroom-app/validator"

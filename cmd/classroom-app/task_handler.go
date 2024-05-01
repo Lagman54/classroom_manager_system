@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FinalProject/internal/classroom-app/entity"
+	"FinalProject/internal/classroom-app/model"
 	"FinalProject/internal/classroom-app/validator"
 	"database/sql"
 	"errors"
@@ -21,13 +21,13 @@ func (app *application) createTaskHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	task := &entity.Task{
+	task := &model.Task{
 		Header:      input.Header,
 		Description: input.Description,
 	}
 
 	v := validator.New()
-	if entity.ValidateTask(v, task); !v.Valid() {
+	if model.ValidateTask(v, task); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
@@ -94,7 +94,7 @@ func (app *application) updateTaskHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	v := validator.New()
-	if entity.ValidateTask(v, task); !v.Valid() {
+	if model.ValidateTask(v, task); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}

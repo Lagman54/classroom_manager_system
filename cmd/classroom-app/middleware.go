@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FinalProject/internal/classroom-app/entity"
+	"FinalProject/internal/classroom-app/model"
 	"FinalProject/internal/classroom-app/validator"
 	"errors"
 	"net/http"
@@ -22,7 +22,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		// an AnonymousUser to the request context. Then we call the next handler in the chain
 		// and return without executing any of the code below.
 		if authorizationHeader == "" {
-			r = app.contextSetUser(r, entity.AnonymousUser)
+			r = app.contextSetUser(r, model.AnonymousUser)
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -45,17 +45,17 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 
 		// If the token isn't valid, use the invalidAuthenticationtokenResponse
 		// helper to send a response, rather than the failedValidatedResponse helper.
-		if entity.ValidateTokenPlaintext(v, token); !v.Valid() {
+		if model.ValidateTokenPlaintext(v, token); !v.Valid() {
 			app.invalidAuthenticationTokenResponse(w, r)
 			return
 		}
 
 		// Retrieve the details of the user associated with the authentication token.
 		// call invalidAuthenticationTokenResponse if no matching record was found.
-		user, err := app.models.Users.GetForToken(entity.ScopeAuthentication, token)
+		user, err := app.models.Users.GetForToken(model.ScopeAuthentication, token)
 		if err != nil {
 			switch {
-			case errors.Is(err, entity.ErrRecordNotFound):
+			case errors.Is(err, model.ErrRecordNotFound):
 				app.invalidAuthenticationTokenResponse(w, r)
 			default:
 				app.serverErrorResponse(w, r, err)

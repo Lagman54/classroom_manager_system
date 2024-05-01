@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS classroom_user
 (
-    user_id  int references users (id),
-    class_id int references classroom (id),
+    user_id  int references users (id) on delete CASCADE ,
+    class_id int references classroom (id) on delete CASCADE,
     role_id  int NOT NULL,
     primary key (user_id, class_id)
 );
@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS task
 
 CREATE TABLE IF NOT EXISTS classroom_task
 (
-    class_id int references classroom (id),
-    task_id  int references task (id),
+    class_id int references classroom (id) on delete CASCADE,
+    task_id  int references task (id) on delete CASCADE,
     primary key (class_id, task_id)
 );
 

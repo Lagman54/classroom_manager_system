@@ -1,7 +1,7 @@
 package main
 
 import (
-	"FinalProject/internal/classroom-app/entity"
+	"FinalProject/internal/classroom-app/model"
 	"FinalProject/internal/classroom-app/validator"
 	"errors"
 	"net/http"
@@ -21,8 +21,8 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 	}
 
 	v := validator.New()
-	entity.ValidateEmail(v, input.Email)
-	entity.ValidatePasswordPlaintext(v, input.Password)
+	model.ValidateEmail(v, input.Email)
+	model.ValidatePasswordPlaintext(v, input.Password)
 
 	if !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
@@ -32,7 +32,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 	user, err := app.models.Users.GetByEmail(input.Email)
 	if err != nil {
 		switch {
-		case errors.Is(err, entity.ErrRecordNotFound):
+		case errors.Is(err, model.ErrRecordNotFound):
 			app.invalidCredentialsResponse(w, r)
 		default:
 			app.serverErrorResponse(w, r, err)
@@ -51,7 +51,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		return
 	}
 
-	token, err := app.models.Tokens.New(user.Id, 24*time.Hour, entity.ScopeAuthentication)
+	token, err := app.models.Tokens.New(user.Id, 24*time.Hour, model.ScopeAuthentication)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
