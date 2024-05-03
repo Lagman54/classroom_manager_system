@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS classroom
     created_at timestamp(0) with time zone DEFAULT now()
 );
 
+CREATE EXTENSION citext;
+
 CREATE TABLE IF NOT EXISTS users
 (
     id            serial PRIMARY KEY,
