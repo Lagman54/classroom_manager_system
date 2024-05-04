@@ -6,11 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      PORT: 8080
-      ENV: development
-      FILL: false
-      MIGRATIONS: file://migration
-      DSN: postgres://postgres:s123@db:5432/classroom_app?sslmode=disable
+      PORT: ${APP_PORT}
+      ENV: ${APP_ENV}
+      FILL: ${APP_FILL}
+      MIGRATIONS: ${APP_MIGRATIONS}
+      DSN: ${APP_DSN}
     ports:
       - "8080:8080"
     depends_on:
@@ -19,9 +19,9 @@ services:
   db:
     image: postgres:16.2
     environment:
-      POSTGRES_DB: classroom_app
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: s123
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
