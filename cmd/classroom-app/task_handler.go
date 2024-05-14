@@ -11,8 +11,9 @@ import (
 
 func (app *application) createTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Header      string `json:"header"`
-		Description string `json:"description"`
+		Header       string `json:"header"`
+		Description  string `json:"description"`
+		ClassroomIds []int  `json:"classrooms"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -32,7 +33,7 @@ func (app *application) createTaskHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.models.Tasks.Insert(task)
+	err = app.models.Tasks.Insert(task, input.ClassroomIds)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

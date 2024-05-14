@@ -22,17 +22,41 @@ type TaskModel struct {
 	ErrorLog *log.Logger
 }
 
-func (t *TaskModel) Insert(task *Task) error {
+func (t *TaskModel) Insert(task *Task, classroomIds []int) error {
 	query := `
 		INSERT INTO task (header, description)
 		VALUES($1, $2)
 		RETURNING id, created_at, updated_at
 `
+
 	args := []any{task.Header, task.Description}
+
+	tx, err := t.DB.BeginTx(context.Background(), nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	tx.QueryRowContext(ctx, query, args...).Scan(&task.Id, &task.CreatedAt, &task.UpdatedAt)
 
-	return t.DB.QueryRowContext(ctx, query, args...).Scan(&task.Id, &task.CreatedAt, &task.UpdatedAt)
+	query = `
+		INSERT INTO classroom_task (class_id, task_id) 
+		VALUES ($1, $2)
+`
+	for _, classId := range classroomIds {
+		ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
+		_, err = tx.ExecContext(ctx, query, classId, task.Id)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (t *TaskModel) Get(id int) (*Task, error) {
@@ -51,6 +75,47 @@ func (t *TaskModel) Get(id int) (*Task, error) {
 		return nil, err
 	}
 	return &task, err
+}
+
+func (t *TaskModel) GetTasksOfClass(classId int) (*[]Task, error) {
+	query := `
+		SELECT task_id FROM classroom_task
+		WHERE class_id=$1
+`
+	rows, err := t.DB.Query(query, classId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []Task
+	for rows.Next() {
+		var taskId *int
+		err = rows.Scan(&taskId)
+		if err != nil {
+			return &tasks, err
+		}
+
+		var task Task
+		query = `
+				SELECT id, header, description, created_at, updated_at FROM task
+				WHERE id=$1
+			`
+
+		row := t.DB.QueryRow(query, taskId)
+		err = row.Scan(&task.Id, &task.Header, &task.Description, &task.CreatedAt, &task.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		tasks = append(tasks, task)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &tasks, nil
 }
 
 func (t *TaskModel) Update(task *Task) error {
