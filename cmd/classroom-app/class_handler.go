@@ -155,19 +155,3 @@ func (app *application) deleteClassHandler(w http.ResponseWriter, r *http.Reques
 
 	app.writeJSON(w, http.StatusOK, envelope{"result": "Success"}, nil)
 }
-
-func (app *application) getTasksForClass(w http.ResponseWriter, r *http.Request) {
-	id, err := app.readIDParam(r)
-	if err != nil || id < 1 {
-		app.badRequestResponse(w, r, err)
-		return
-	}
-	tasks, err := app.models.Tasks.GetTasksOfClass(id)
-
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
-	app.writeJSON(w, http.StatusOK, envelope{"tasks": tasks}, nil)
-}

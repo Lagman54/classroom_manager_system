@@ -6,16 +6,20 @@ import (
 )
 
 func PopulateDatabase(models model.Models) error {
-	for index, class := range classrooms {
+	for _, class := range classrooms {
 		err := models.Classrooms.Insert(&class)
 		if err != nil {
 			return err
 		}
-		task := model.Task{
-			Header:      "task #" + strconv.Itoa(index),
-			Description: "task in a " + class.Name,
+
+		for i := 0; i < 5; i++ {
+			task := model.Task{
+				Header:      "task #" + strconv.Itoa(i),
+				Description: "task in a " + class.Name,
+			}
+			err = models.Tasks.Insert(&task, class.Id)
 		}
-		err = models.Tasks.Insert(&task, class.Id)
+
 	}
 	return nil
 }

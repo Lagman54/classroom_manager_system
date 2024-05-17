@@ -123,3 +123,42 @@ func (app *application) deleteTaskHandler(w http.ResponseWriter, r *http.Request
 
 	app.writeJSON(w, http.StatusOK, envelope{"result": "Success"}, nil)
 }
+
+func (app *application) getTasksForClass(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil || id < 1 {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	var input struct {
+		Name string
+		model.Filters
+	}
+	v := validator.New()
+	qs := r.URL.Query()
+
+	input.Name = app.readStrings(qs, "header", "")
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
+	input.Filters.Sort = app.readStrings(qs, "sort", "id")
+
+	input.Filters.SortSafeList = []string{
+		"id", "header",
+		"-id", "-header",
+	}
+
+	if model.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	tasks, metadata, err := app.models.Tasks.GetTasksOfClass(id, input.Name, input.Filters)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, envelope{"tasks": tasks, "metadata": metadata}, nil)
+}

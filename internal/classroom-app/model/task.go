@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"sort"
 	"time"
 )
 
@@ -77,14 +78,15 @@ func (t *TaskModel) Get(id int) (*Task, error) {
 	return &task, err
 }
 
-func (t *TaskModel) GetTasksOfClass(classId int) (*[]Task, error) {
+func (t *TaskModel) GetTasksOfClass(classId int, header string, filters Filters) (*[]Task, Metadata, error) {
 	query := `
 		SELECT task_id FROM classroom_task
 		WHERE class_id=$1
-`
+		`
+
 	rows, err := t.DB.Query(query, classId)
 	if err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
 	defer rows.Close()
 
@@ -93,29 +95,52 @@ func (t *TaskModel) GetTasksOfClass(classId int) (*[]Task, error) {
 		var taskId *int
 		err = rows.Scan(&taskId)
 		if err != nil {
-			return &tasks, err
+			return nil, Metadata{}, err
 		}
 
 		var task Task
 		query = `
-				SELECT id, header, description, created_at, updated_at FROM task
-				WHERE id=$1
+			SELECT id, header, description, created_at, updated_at 
+			FROM task
+			WHERE id=$1 and (LOWER(header) = LOWER($2) OR $2 = '')
 			`
 
-		row := t.DB.QueryRow(query, taskId)
+		args := []interface{}{taskId, header}
+		row := t.DB.QueryRow(query, args...)
 		err = row.Scan(&task.Id, &task.Header, &task.Description, &task.CreatedAt, &task.UpdatedAt)
 		if err != nil {
-			return nil, err
+			return nil, Metadata{}, err
 		}
 
 		tasks = append(tasks, task)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
 
-	return &tasks, nil
+	if filters.sortDirection() == "ASC" {
+		sort.Slice(tasks, func(i, j int) bool {
+			return tasks[i].Header < tasks[j].Header
+		})
+	} else if filters.sortDirection() == "DESC" {
+		sort.Slice(tasks, func(i, j int) bool {
+			return tasks[i].Header > tasks[j].Header
+		})
+	}
+
+	totalRecords := len(tasks)
+	st := filters.PageSize * (filters.Page - 1)
+	en := min(len(tasks), st+filters.PageSize)
+	if st < len(tasks) {
+		tasks = tasks[st:en]
+	} else {
+		tasks = []Task{}
+	}
+
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	return &tasks, metadata, nil
 }
 
 func (t *TaskModel) Update(task *Task) error {
