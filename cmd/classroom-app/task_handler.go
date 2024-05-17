@@ -52,7 +52,7 @@ func (app *application) getTaskHandler(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Printf("Task with ID %d not found", taskId)
 		}
-		app.serverErrorResponse(w, r, err)
+		app.notFoundResponse(w, r)
 		return
 	}
 

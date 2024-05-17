@@ -3,5 +3,6 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/internal/classroom-app/migration/000001_init_mg.down.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/internal/classroom-app/migration/000001_init_mg.up.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/internal/classroom-app/model/task.go" dialect="GenericSQL" />
   </component>
 </project>
