@@ -1,13 +1,21 @@
 package filler
 
-import "FinalProject/internal/classroom-app/model"
+import (
+	"FinalProject/internal/classroom-app/model"
+	"strconv"
+)
 
 func PopulateDatabase(models model.Models) error {
-	for _, class := range classrooms {
+	for index, class := range classrooms {
 		err := models.Classrooms.Insert(&class)
 		if err != nil {
 			return err
 		}
+		task := model.Task{
+			Header:      "task #" + strconv.Itoa(index),
+			Description: "task in a " + class.Name,
+		}
+		err = models.Tasks.Insert(&task, class.Id)
 	}
 	return nil
 }

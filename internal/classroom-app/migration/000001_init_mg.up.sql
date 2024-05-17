@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS classroom
     created_at timestamp(0) with time zone DEFAULT now()
 );
 
-CREATE EXTENSION citext;
+CREATE EXTENSION IF NOT EXISTS citext;
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -19,21 +19,13 @@ CREATE TABLE IF NOT EXISTS users
     activated     bool    NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS classroom_user
-(
-    user_id  int references users (id) on delete CASCADE ,
-    class_id int references classroom (id) on delete CASCADE,
-    role_id  int NOT NULL,
-    primary key (user_id, class_id)
-);
-
 CREATE TABLE IF NOT EXISTS task
 (
     id          serial primary key,
     header      varchar                     NOT NULL,
     description varchar                     NOT NULL,
-    created_at  timestamp(0) with time zone NOT NULL DEFAULT now(),
-    updated_at  timestamp(0) with time zone NOT NULL DEFAULT now()
+    created_at  timestamp(0) with time zone DEFAULT now(),
+    updated_at  timestamp(0) with time zone DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS classroom_task

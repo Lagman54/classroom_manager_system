@@ -22,7 +22,7 @@ type TaskModel struct {
 	ErrorLog *log.Logger
 }
 
-func (t *TaskModel) Insert(task *Task, classroomIds []int) error {
+func (t *TaskModel) Insert(task *Task, classroomIds ...int) error {
 	query := `
 		INSERT INTO task (header, description)
 		VALUES($1, $2)

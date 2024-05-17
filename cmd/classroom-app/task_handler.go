@@ -33,7 +33,7 @@ func (app *application) createTaskHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	err = app.models.Tasks.Insert(task, input.ClassroomIds)
+	err = app.models.Tasks.Insert(task, input.ClassroomIds...)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
