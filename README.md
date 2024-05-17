@@ -29,6 +29,11 @@ env - App running mode. Default: development
 port - App port. Default: 8081
 ```
 
+## Connect to server
+```
+https://octopus-app-a8j68.ondigitalocean.app/
+```
+
 ## Classroom REST API
 ```
 GET /classes
@@ -42,6 +47,14 @@ POST /task
 GET /task/:id
 PUT /task/:id
 DELETE /task/:id
+```
+
+## Add write permission example
+```sql
+INSERT INTO users_permissions
+SELECT 1, permissions.id
+FROM permissions
+WHERE permissions.code = 'task:write';
 ```
 
 ## DB Structure

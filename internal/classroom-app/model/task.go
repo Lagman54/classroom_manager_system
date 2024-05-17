@@ -4,6 +4,7 @@ import (
 	"FinalProject/internal/classroom-app/validator"
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"sort"
 	"time"
@@ -109,6 +110,9 @@ func (t *TaskModel) GetTasksOfClass(classId int, header string, filters Filters)
 		row := t.DB.QueryRow(query, args...)
 		err = row.Scan(&task.Id, &task.Header, &task.Description, &task.CreatedAt, &task.UpdatedAt)
 		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				continue
+			}
 			return nil, Metadata{}, err
 		}
 
@@ -119,14 +123,16 @@ func (t *TaskModel) GetTasksOfClass(classId int, header string, filters Filters)
 		return nil, Metadata{}, err
 	}
 
-	if filters.sortDirection() == "ASC" {
-		sort.Slice(tasks, func(i, j int) bool {
-			return tasks[i].Header < tasks[j].Header
-		})
-	} else if filters.sortDirection() == "DESC" {
-		sort.Slice(tasks, func(i, j int) bool {
-			return tasks[i].Header > tasks[j].Header
-		})
+	if filters.sortColumn() == "date" {
+		if filters.sortDirection() == "ASC" {
+			sort.Slice(tasks, func(i, j int) bool {
+				return tasks[i].CreatedAt < tasks[j].CreatedAt
+			})
+		} else if filters.sortDirection() == "DESC" {
+			sort.Slice(tasks, func(i, j int) bool {
+				return tasks[i].CreatedAt > tasks[j].CreatedAt
+			})
+		}
 	}
 
 	totalRecords := len(tasks)

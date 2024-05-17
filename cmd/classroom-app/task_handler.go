@@ -38,7 +38,7 @@ func (app *application) createTaskHandler(w http.ResponseWriter, r *http.Request
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-	app.writeJSON(w, http.StatusOK, envelope{"task": task}, nil)
+	app.writeJSON(w, http.StatusCreated, envelope{"task": task}, nil)
 }
 
 func (app *application) getTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -144,8 +144,8 @@ func (app *application) getTasksForClass(w http.ResponseWriter, r *http.Request)
 	input.Filters.Sort = app.readStrings(qs, "sort", "id")
 
 	input.Filters.SortSafeList = []string{
-		"id", "header",
-		"-id", "-header",
+		"id", "date",
+		"-id", "-date",
 	}
 
 	if model.ValidateFilters(v, input.Filters); !v.Valid() {
