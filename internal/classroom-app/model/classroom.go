@@ -14,8 +14,6 @@ type Classroom struct {
 	CreatedAt   string `json:"createdAt"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Students    []User `json:"users"`
-	Teachers    []User `json:"teachers"`
 }
 
 type ClassroomModel struct {
@@ -50,8 +48,6 @@ func (c ClassroomModel) Get(id int) (*Classroom, error) {
 	var classRoom Classroom
 	row := c.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(&classRoom.Id, &classRoom.Name, &classRoom.Description, &classRoom.CreatedAt)
-
-	// TODO add Students and Teachers to classRoom
 
 	if err != nil {
 		return nil, err

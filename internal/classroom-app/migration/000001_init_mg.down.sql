@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS classroom_user;
 DROP TABLE IF EXISTS classroom_task;
 DROP TABLE IF EXISTS classroom;
 DROP TABLE IF EXISTS task;
-DROP TABLE IF EXISTS users;

@@ -1,0 +1,9 @@
+.git
+.vscode
+.gitignore
+.dockerignore
+*.dbmdl
+compose*
+Dockerfile
+Makefile
+README.md

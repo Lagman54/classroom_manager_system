@@ -27,6 +27,8 @@ func (app *application) routes() http.Handler {
 	api.HandleFunc("/class/{id}", app.requireActivatedUser(app.updateClassHandler)).Methods("PUT")
 	// Delete class
 	api.HandleFunc("/class/{id}", app.requirePermissions("class:write", app.deleteClassHandler)).Methods("DELETE")
+	// Get tasks of a class
+	api.HandleFunc("/class/{id}/tasks", app.requireActivatedUser(app.getTasksForClass)).Methods("GET")
 
 	// Create Task
 	api.HandleFunc("/task", app.requirePermissions("task:write", app.createTaskHandler)).Methods("POST")
